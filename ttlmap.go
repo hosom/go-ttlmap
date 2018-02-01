@@ -83,3 +83,28 @@ func (ttlmap *TTLMap) Remove(key interface{}) {
 	// remember to clean up the schedule
 	ttlmap.clearSchedule(key)
 }
+
+// Get returns a value from the map
+func (ttlmap *TTLMap) Get(key interface{}) (value interface{}) {
+	ttlmap.eMutex.Lock()
+	defer ttlmap.eMutex.Unlock()
+
+	if value, present := ttlmap.entries[key]; present {
+		return value
+	}
+
+	return nil
+}
+
+// GetAll returns the whole map
+func (ttlmap *TTLMap) GetAll() (copied map[interface{}]interface{}) {
+	ttlmap.eMutex.Lock()
+	defer ttlmap.eMutex.Unlock()
+
+	copied = make(map[interface{}]interface{})
+	for key, value := range ttlmap.entries {
+		copied[key] = value
+	}
+
+	return copied
+}
